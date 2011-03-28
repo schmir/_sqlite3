@@ -50,7 +50,7 @@ static PyObject* module_connect(PyObject* self, PyObject* args, PyObject*
      * C-level, so this code is redundant with the one in connection_init in
      * connection.c and must always be copied from there ... */
 
-    static char *kwlist[] = {"database", "timeout", "detect_types", "isolation_level", "check_same_thread", "factory", "cached_statements", NULL, NULL};
+    static char *kwlist[] = {"database", "timeout", "detect_types", "isolation_level", "check_same_thread", "factory", "cached_statements", "chunk_size", NULL, NULL};
     PyObject* database;
     int detect_types = 0;
     PyObject* isolation_level;
@@ -58,11 +58,12 @@ static PyObject* module_connect(PyObject* self, PyObject* args, PyObject*
     int check_same_thread = 1;
     int cached_statements;
     double timeout = 5.0;
+    int chunk_size = -1;
 
     PyObject* result;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|diOiOi", kwlist,
-                                     &database, &timeout, &detect_types, &isolation_level, &check_same_thread, &factory, &cached_statements))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|diOiOii", kwlist,
+                                     &database, &timeout, &detect_types, &isolation_level, &check_same_thread, &factory, &cached_statements, &chunk_size))
     {
         return NULL; 
     }

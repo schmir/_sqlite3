@@ -59,7 +59,7 @@ static void _sqlite3_result_error(sqlite3_context* ctx, const char* errmsg, int 
 
 int pysqlite_connection_init(pysqlite_Connection* self, PyObject* args, PyObject* kwargs)
 {
-    static char *kwlist[] = {"database", "timeout", "detect_types", "isolation_level", "check_same_thread", "factory", "cached_statements", NULL, NULL};
+    static char *kwlist[] = {"database", "timeout", "detect_types", "isolation_level", "check_same_thread", "factory", "cached_statements", "chunk_size", NULL, NULL};
 
     PyObject* database;
     int detect_types = 0;
@@ -68,14 +68,15 @@ int pysqlite_connection_init(pysqlite_Connection* self, PyObject* args, PyObject
     int check_same_thread = 1;
     int cached_statements = 100;
     double timeout = 5.0;
+    int chunk_size = -1;
     int rc;
     PyObject* class_attr = NULL;
     PyObject* class_attr_str = NULL;
     int is_apsw_connection = 0;
     PyObject* database_utf8;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|diOiOi", kwlist,
-                                     &database, &timeout, &detect_types, &isolation_level, &check_same_thread, &factory, &cached_statements))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|diOiOii", kwlist,
+                                     &database, &timeout, &detect_types, &isolation_level, &check_same_thread, &factory, &cached_statements, &chunk_size))
     {
         return -1;
     }
@@ -107,6 +108,10 @@ int pysqlite_connection_init(pysqlite_Connection* self, PyObject* args, PyObject
 
         Py_BEGIN_ALLOW_THREADS
         rc = sqlite3_open(PyString_AsString(database_utf8), &self->db);
+	if (rc == SQLITE_OK && chunk_size > 0) {
+  	    sqlite3_file_control(self->db, NULL, SQLITE_FCNTL_CHUNK_SIZE, &chunk_size);
+	}
+
         Py_END_ALLOW_THREADS
 
         Py_DECREF(database_utf8);
