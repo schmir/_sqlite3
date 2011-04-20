@@ -48,7 +48,7 @@ int pysqlite_step(sqlite3_stmt* statement, pysqlite_Connection* connection)
 int _pysqlite_seterror(sqlite3* db, sqlite3_stmt* st)
 {
     int errorcode;
-
+    char buf[100];
     /* SQLite often doesn't report anything useful, unless you reset the statement first */
     if (st != NULL) {
         (void)sqlite3_reset(st);
@@ -67,16 +67,20 @@ int _pysqlite_seterror(sqlite3* db, sqlite3_stmt* st)
             break;
         case SQLITE_NOMEM:
             (void)PyErr_NoMemory();
-            break;
-        case SQLITE_ERROR:
+	    break;
+	case SQLITE_IOERR:
+	    PyOS_snprintf(buf, sizeof(buf) - 1, "%s (errcode=0x%x)",
+			  sqlite3_errmsg(db), sqlite3_extended_errcode(db));
+	    PyErr_SetString(pysqlite_OperationalError, buf);
+	    break;
+	case SQLITE_ERROR:
         case SQLITE_PERM:
         case SQLITE_ABORT:
         case SQLITE_BUSY:
         case SQLITE_LOCKED:
         case SQLITE_READONLY:
         case SQLITE_INTERRUPT:
-        case SQLITE_IOERR:
-        case SQLITE_FULL:
+	case SQLITE_FULL:
         case SQLITE_CANTOPEN:
         case SQLITE_PROTOCOL:
         case SQLITE_EMPTY:
