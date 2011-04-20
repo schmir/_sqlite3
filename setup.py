@@ -11,5 +11,6 @@ else:
     define_macros = [("MODULE_NAME", '"sqlite3"')]
 
 setup(name="_sqlite3",
+      version="2.6.0-schmir1",
       description="make stdout unbuffered",
       ext_modules=[Extension("_sqlite3", sources, define_macros=define_macros)])
