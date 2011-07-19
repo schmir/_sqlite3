@@ -1,3 +1,7 @@
 *.pyc
 *.pyd
 /build
+/MANIFEST
+/_sqlite3.so
+/_sqlite3.pyd
+/dist/
