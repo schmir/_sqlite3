@@ -53,8 +53,7 @@ Please rename the file manually!
 
 
 setup(name="_sqlite3",
-      version="2.6.0-schmir1",
-      description="make stdout unbuffered",
+      version="2.6.0-schmir2",
       url="https://github.com/schmir/_sqlite3",
       ext_modules=[Extension("_sqlite3", sources, define_macros=define_macros)],
       cmdclass=dict(install=install))
